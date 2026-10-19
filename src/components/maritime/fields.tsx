@@ -1,105 +1,18 @@
-import { useState, type ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
+import { useState, type ReactNode } from 'react';
+import { Check, ChevronDown, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-export function Panel({ icon, title, tag, children, collapsible, defaultOpen = true }: {
-  icon: ReactNode; title: string; tag: string; children: ReactNode; collapsible?: boolean; defaultOpen?: boolean;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <section className="glass glass-hover rounded-2xl">
-      <button
-        type="button"
-        onClick={() => collapsible && setOpen(!open)}
-        className={`flex w-full items-center gap-3 p-5 text-left ${collapsible ? "cursor-pointer" : "cursor-default"}`}
-      >
-        <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">{icon}</span>
-        <div className="flex-1">
-          <p className="num text-[10px] uppercase tracking-[0.2em] text-primary">{tag}</p>
-          <h2 className="text-base font-semibold">{title}</h2>
-        </div>
-        {collapsible && <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />}
-      </button>
-      {open && <div className="grid gap-5 border-t px-5 pb-5 pt-4 sm:grid-cols-2 animate-in fade-in">{children}</div>}
-    </section>
-  );
+export function Panel({icon,title,tag,children,extra}:{icon:ReactNode;title:string;tag:string;children:ReactNode;extra?:ReactNode}) {
+ return <section className="rounded-lg border bg-card"><div className="flex items-center gap-3 border-b px-6 py-4"><span className="text-muted-foreground">{icon}</span><h2 className="flex-1 text-sm font-semibold">{title}</h2><span className="num text-[10px] text-placeholder">{tag}</span></div>{extra}<div className="grid gap-x-5 gap-y-5 p-6 sm:grid-cols-2">{children}</div></section>;
 }
-
-const fmt = (v: number, step: number) =>
-  v.toLocaleString("en-US", { maximumFractionDigits: step < 1 ? (step < 0.1 ? 2 : 1) : 0, minimumFractionDigits: step < 1 ? (step < 0.1 ? 2 : 1) : 0 });
-
-export function SliderField({ label, value, onChange, min, max, step, prefix = "", unit = "", hint, input }: {
-  label: string; value: number; onChange: (v: number) => void; min: number; max: number; step: number;
-  prefix?: string; unit?: string; hint?: string; input?: boolean;
-}) {
-  return (
-    <div className="space-y-2.5">
-      <div className="flex items-baseline justify-between gap-2">
-        <label className="text-xs font-medium text-muted-foreground">{label}</label>
-        {input ? (
-          <input
-            type="number" min={min} max={max} step={step} value={value}
-            onChange={(e) => onChange(Math.min(max, Math.max(min, Number(e.target.value))))}
-            className="num w-28 rounded-md border bg-abyss/60 px-2 py-1 text-right text-sm text-foreground outline-none focus:border-primary"
-          />
-        ) : (
-          <span className="num text-sm text-foreground">{prefix}{fmt(value, step)}{unit && <span className="ml-1 text-muted-foreground">{unit}</span>}</span>
-        )}
-      </div>
-      <Slider value={[value]} min={min} max={max} step={step} onValueChange={([v]) => onChange(v ?? min)} />
-      {hint && <p className="num text-[11px] text-muted-foreground">{hint}</p>}
-    </div>
-  );
+export const inputClass = 'num h-11 w-full rounded-md border bg-card px-3 py-2.5 text-sm text-foreground outline-none focus:border-interactive focus:ring-2 focus:ring-interactive/10';
+export function NumberField({label,value,onChange,min,max,step=1,unit,hint,slider=false}:{label:string;value:number;onChange:(v:number)=>void;min:number;max?:number;step?:number;unit?:string;hint?:string | undefined;slider?:boolean}) {
+ const id=label.replaceAll(' ','-');
+ return <div className="space-y-2"><label htmlFor={id} className="block text-xs font-medium text-label">{label}</label><div className="relative"><input id={id} type="number" required value={value} min={min} max={max} step={step} onChange={e=>onChange(Number(e.target.value))} className={`${inputClass} ${unit?'pr-24':''}`} />{unit&&<span className="pointer-events-none absolute right-3 top-3 text-[11px] text-muted-foreground">{unit}</span>}</div>{slider&&max!==undefined&&<Slider aria-label={`${label} slider`} value={[value]} min={min} max={max} step={step} onValueChange={([v])=>onChange(v??min)} className="py-1"/>}{hint&&<p className="num text-[10px] text-muted-foreground">{hint}</p>}</div>;
 }
-
-export function SelectField({ label, value, onChange, options }: {
-  label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[];
-}) {
-  return (
-    <div className="space-y-2">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
-      <select
-        value={value} onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border bg-abyss/60 px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:shadow-glow"
-      >
-        {options.map((o) => <option key={o.value} value={o.value} className="bg-popover">{o.label}</option>)}
-      </select>
-    </div>
-  );
-}
-
-export function PortField({ label, value, onChange, ports }: {
-  label: string; value: string; onChange: (v: string) => void; ports: { name: string; country: string; flag: string }[];
-}) {
-  const id = label.replace(/\s/g, "-");
-  return (
-    <div className="space-y-2">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
-      <input
-        list={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search port…"
-        className="w-full rounded-lg border bg-abyss/60 px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:shadow-glow"
-      />
-      <datalist id={id}>
-        {ports.map((p) => <option key={p.name} value={p.name}>{p.flag} {p.country}</option>)}
-      </datalist>
-    </div>
-  );
-}
-
-export function Pills({ label, value, onChange, options }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[];
-}) {
-  return (
-    <div className="space-y-2 sm:col-span-2">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
-      <div className="grid grid-cols-2 gap-1 rounded-xl border bg-abyss/60 p-1 sm:grid-cols-4">
-        {options.map((o) => (
-          <button
-            key={o} type="button" onClick={() => onChange(o)}
-            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${value === o ? "bg-gradient-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"}`}
-          >{o}</button>
-        ))}
-      </div>
-    </div>
-  );
+export function PortField({label,value,onChange,ports}:{label:string;value:string;onChange:(v:string)=>void;ports:{id:string;name:string;country:string}[]}) {
+ const [open,setOpen]=useState(false);const [query,setQuery]=useState('');const selected=ports.find(p=>p.id===value);
+ return <div className="space-y-2"><label className="block text-xs font-medium text-label">{label}</label><Popover open={open} onOpenChange={setOpen}><PopoverTrigger asChild><Button type="button" variant="outline" role="combobox" aria-label={label} aria-expanded={open} className="h-11 w-full justify-between bg-card px-3 font-normal"><span className="flex min-w-0 items-center gap-2"><span className="truncate">{selected?.name}</span><span className="truncate text-[10px] text-muted-foreground">{selected?.country}</span></span><ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground"/></Button></PopoverTrigger><PopoverContent align="start" className="w-80 p-0"><div className="flex items-center gap-2 border-b p-3"><Search className="h-4 w-4 text-muted-foreground"/><input aria-label={`Search ${label}`} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search city or country" className="w-full bg-card text-sm outline-none"/></div><div className="max-h-64 overflow-auto p-1">{ports.filter(p=>`${p.name} ${p.country} ${p.id}`.toLowerCase().includes(query.toLowerCase())).map(p=><Button key={p.id} type="button" variant="ghost" onClick={()=>{onChange(p.id);setOpen(false);setQuery('')}} className="h-auto w-full justify-start gap-2 py-2"><Check className={`h-3 w-3 ${p.id===value?'text-interactive':'opacity-0'}`}/><span className="flex-1 text-left"><span className="block text-xs">{p.name}</span><span className="text-[10px] font-normal text-muted-foreground">{p.country}</span></span><span className="num text-[10px] font-normal text-muted-foreground">{p.id}</span></Button>)}{!ports.some(p=>`${p.name} ${p.country} ${p.id}`.toLowerCase().includes(query.toLowerCase()))&&<p className="p-4 text-xs text-muted-foreground">No ports found</p>}</div></PopoverContent></Popover></div>;
 }

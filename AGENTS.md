@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep voyage defaults, port identifiers, numeric constraints and payload normalization in the shared maritime model module so the form and constraint tests use the same contract.
+- Keep prediction requests in the frontend; results display only returned model values, and report exports use those values without inference.
