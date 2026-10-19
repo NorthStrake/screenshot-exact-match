@@ -125,7 +125,3 @@
   animation: shine 4s linear infinite;
 }
 
-/* Neon slider track glow */
-[data-slot="slider-range"] { background: var(--gradient-primary) !important; box-shadow: 0 0 12px oklch(0.71 0.13 222 / 0.7); }
-[data-slot="slider-track"] { background: oklch(1 0 0 / 0.08) !important; }
-[data-slot="slider-thumb"] { background: var(--foreground) !important; border-color: var(--primary) !important; box-shadow: 0 0 10px oklch(0.71 0.13 222 / 0.8); }
