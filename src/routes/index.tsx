@@ -32,7 +32,7 @@ function Index() {
   const follow = (e: SyntheticEvent) => {
     const el = (e.target as HTMLElement).closest<HTMLElement>('[data-pip]'); const box = wrap.current; if (!el || !box) return;
     const a = el.getBoundingClientRect(), b = box.getBoundingClientRect();
-    setPip(p => ({ ...p, top: a.top - b.top - 70, left: Math.min(a.left - b.left + a.width - 90, b.width - 90), spy: true, say: el.dataset.pip === p.say ? p.say : (el.dataset.pip ?? p.say) }));
+    setPip(p => ({ ...p, top: a.top - b.top - 70, left: Math.min(a.left - b.left + a.width - 90, b.width - 90), spy: true, say: el.dataset['pip'] === p.say ? p.say : (el.dataset['pip'] ?? p.say) }));
   };
   useEffect(() => () => clearTimeout(moodTimer.current), []);
 
