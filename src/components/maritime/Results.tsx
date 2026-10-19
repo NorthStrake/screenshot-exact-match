@@ -13,7 +13,7 @@ export function Results({data}:{data:Json|null}) {
   <div className="relative flex min-h-[420px] flex-col items-center justify-center overflow-hidden px-7 py-10 text-center">
    <svg className="absolute inset-0 h-full w-full opacity-40" aria-hidden><defs><pattern id="chart" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" className="fill-none stroke-border" strokeWidth=".6"/></pattern></defs><rect width="100%" height="100%" fill="url(#chart)"/></svg>
    {PARTICLES.map(([x,y],i)=><span key={i} className="animate-float absolute h-1.5 w-1.5 rounded-full bg-interactive/70" style={{left:`${x}%`,top:`${y}%`,animationDelay:`${i*0.6}s`}}/>)}
-   <span className="absolute left-6 top-6 num text-[9px] text-spray/70">32°55′S 151°47′E</span><span className="absolute bottom-16 right-6 num text-[9px] text-spray/70">20°16′N 86°40′E</span>
+   
    <CompassRose className="animate-spin-slow relative h-40 w-40 drop-shadow-[0_0_18px_var(--gold)]"/>
    <h3 className="relative mt-6 text-sm font-bold tracking-[.2em] text-gold">VOYAGE DISPATCH STANDBY</h3>
    <p className="relative mt-3 max-w-xs text-xs leading-6 text-muted-foreground">Configure harbor parameters and launch real-time simulation.</p>
