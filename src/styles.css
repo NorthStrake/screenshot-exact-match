@@ -3,49 +3,73 @@
 @source "../src";
 @custom-variant dark (&:is(.dark *));
 @theme inline {
- --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 8px; --radius-2xl: 8px;
+ --radius-sm: 4px; --radius-md: 6px; --radius-lg: 10px; --radius-xl: 14px; --radius-2xl: 18px;
  --font-sans: "Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif;
  --font-mono: "JetBrains Mono",ui-monospace,monospace;
  --color-background: var(--background); --color-foreground: var(--foreground);
  --color-card: var(--card); --color-card-foreground: var(--foreground);
- --color-popover: var(--card); --color-popover-foreground: var(--foreground);
+ --color-popover: var(--secondary); --color-popover-foreground: var(--foreground);
  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
  --color-secondary: var(--secondary); --color-secondary-foreground: var(--foreground);
- --color-muted: var(--secondary); --color-muted-foreground: var(--muted-foreground);
+ --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
  --color-accent: var(--accent); --color-accent-foreground: var(--foreground);
- --color-destructive: var(--destructive); --color-destructive-foreground: var(--primary-foreground);
+ --color-destructive: var(--destructive); --color-destructive-foreground: var(--foreground);
  --color-border: var(--border); --color-input: var(--border); --color-ring: var(--interactive);
- --color-success: var(--success); --color-warning: var(--warning); --color-interactive: var(--interactive);
- --color-label: var(--label); --color-placeholder: var(--placeholder);
- --color-wave: var(--wave); --color-ocean: var(--interactive); --color-abyss: var(--secondary);
+ --color-success: var(--interactive); --color-warning: var(--brass); --color-interactive: var(--interactive);
+ --color-label: var(--spray); --color-placeholder: var(--muted-foreground);
+ --color-wave: var(--cyan); --color-cyan: var(--cyan); --color-spray: var(--spray);
+ --color-brass: var(--brass); --color-gold: var(--gold); --color-coal: var(--coal);
 }
 :root {
- color-scheme: light;
- --radius: .5rem; --background: oklch(.984 .003 247.858); --foreground: oklch(.208 .042 265.755);
- --card: oklch(1 0 0); --primary: oklch(.208 .042 265.755); --primary-foreground: oklch(1 0 0);
- --secondary: oklch(.968 .007 247.896); --muted-foreground: oklch(.554 .046 257.417);
- --label: oklch(.446 .043 257.281); --placeholder: oklch(.704 .04 256.788);
- --accent: oklch(.932 .032 255.585); --interactive: oklch(.546 .245 262.881);
- --success: oklch(.6 .118 184.704); --warning: oklch(.666 .179 58.318);
- --destructive: oklch(.577 .245 27.325); --border: oklch(.929 .013 255.508); --wave: oklch(.882 .035 252);
- --shadow-modal: 0 24px 80px oklch(.208 .042 265.755 / .18);
- --overlay: oklch(.208 .042 265.755 / .3);
+ color-scheme: dark;
+ --radius: .625rem;
+ --background: #0B192C; --background-deep: #0F243A; --foreground: #E2F1FF;
+ --card: #152F4A; --secondary: #1C3B5E; --muted: #1A3655; --accent: #12405A;
+ --primary: #00F5A0; --primary-foreground: #06231A; --interactive: #00F5A0; --cyan: #00D2D3;
+ --brass: #F59E0B; --gold: #D4AF37; --spray: #7EE7F8; --coal: #22262E;
+ --muted-foreground: #8FB0CC; --destructive: #F0616D; --border: #2A4E74;
+ --gradient-primary: linear-gradient(90deg,#00F5A0,#00A896);
+ --gradient-canvas: radial-gradient(1200px 600px at 80% -10%, #12405A 0%, transparent 60%), linear-gradient(180deg,#0B192C,#0F243A);
+ --shadow-glow: 0 0 0 1px color-mix(in oklab,#00F5A0 35%,transparent), 0 10px 40px -10px color-mix(in oklab,#00F5A0 35%,transparent);
+ --overlay: rgb(11 25 44 / .7);
 }
 @layer base {
  * {border-color:var(--border);letter-spacing:0;}
- body {margin:0;background:var(--background);color:var(--foreground);font-family:var(--font-sans);min-height:100vh;}
- input::placeholder {color:var(--placeholder);}
- svg.lucide {stroke-width:1.5;}
+ body {margin:0;background:var(--gradient-canvas);background-attachment:fixed;color:var(--foreground);font-family:var(--font-sans);min-height:100vh;}
+ input::placeholder {color:var(--muted-foreground);}
+ svg.lucide {stroke-width:1.6;}
+ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(.8) sepia(1) hue-rotate(120deg);}
+ select option{background:var(--secondary);}
 }
 @utility num {font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+@utility bg-gradient-primary {background-image:var(--gradient-primary);}
+@utility glow-card {box-shadow:var(--shadow-glow);}
+@utility panel-surface {background:linear-gradient(160deg,var(--card),color-mix(in oklab,var(--card) 70%,var(--background)));}
 @keyframes waveAnimation {from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes shipBob {0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-4px) rotate(1.5deg)}}
-@keyframes sail {from{transform:translateX(-100px)}to{transform:translateX(420px)}}
-@utility animate-wave {animation:waveAnimation 18s linear infinite;}
-@utility animate-wave-slow {animation:waveAnimation 25s linear infinite;}
-@utility animate-bob {animation:shipBob 3s ease-in-out infinite;}
-@utility animate-sail {animation:sail 9s linear infinite;}
-.loading-backdrop {background:var(--overlay);}
-.loading-modal {box-shadow:var(--shadow-modal);}
+@keyframes shipPitchRoll {0%,100%{transform:translateY(0) rotate(-1.5deg)}25%{transform:translateY(-3px) rotate(0deg)}50%{transform:translateY(-5px) rotate(1.8deg)}75%{transform:translateY(-2px) rotate(0deg)}}
+@keyframes sail {from{transform:translateX(-200px)}to{transform:translateX(560px)}}
+@keyframes spin {to{transform:rotate(360deg)}}
+@keyframes radar {to{transform:rotate(360deg)}}
+@keyframes pingSlow {0%{transform:scale(.6);opacity:1}100%{transform:scale(2.2);opacity:0}}
+@keyframes drawRoute {from{stroke-dashoffset:600}to{stroke-dashoffset:0}}
+@keyframes foam {0%,100%{opacity:.4;transform:scaleX(.8)}50%{opacity:.9;transform:scaleX(1.2)}}
+@keyframes typeIn {from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes float {0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-14px);opacity:.9}}
+@keyframes radarBorder {0%,100%{box-shadow:0 0 0 0 color-mix(in oklab,#00F5A0 55%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
+@utility animate-wave {animation:waveAnimation 14s linear infinite;}
+@utility animate-wave-slow {animation:waveAnimation 22s linear infinite;}
+@utility animate-pitch {animation:shipPitchRoll 3.2s ease-in-out infinite;transform-origin:50% 70%;}
+@utility animate-bob {animation:shipPitchRoll 4s ease-in-out infinite;}
+@utility animate-sail {animation:sail 8s linear infinite;}
+@utility animate-spin-slow {animation:spin 40s linear infinite;}
+@utility animate-radar {animation:radar 3s linear infinite;transform-origin:0 0;}
+@utility animate-ping-slow {animation:pingSlow 2.4s ease-out infinite;transform-box:fill-box;transform-origin:center;}
+@utility animate-float {animation:float 5s ease-in-out infinite;}
+@utility animate-radar-border {animation:radarBorder 2.2s ease-out infinite;}
+@utility route-draw {stroke-dasharray:6 5;animation:drawRoute 4s linear infinite;}
+@utility typewriter {animation:typeIn .5s steps(30) both;}
+@utility wake {background:linear-gradient(90deg,transparent,color-mix(in oklab,var(--foreground) 70%,transparent));filter:blur(2px);animation:foam 1s ease-in-out infinite;}
+@utility bow-foam {background:var(--foreground);filter:blur(3px);animation:foam .7s ease-in-out infinite;}
+input[type=range]{accent-color:var(--interactive);}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
-@media print {body{background:var(--card)} header,footer,.workbench-form,.report-controls,.workspace-heading{display:none!important} main{display:block!important;max-width:none!important;padding:0!important} aside{position:static!important} .report{border:0!important} }
+@media print {body{background:#fff;color:#000} header,footer,.workbench-form,.report-controls,.workspace-heading{display:none!important} main{display:block!important;max-width:none!important;padding:0!important} aside{position:static!important} .report{border:0!important;box-shadow:none!important}}
