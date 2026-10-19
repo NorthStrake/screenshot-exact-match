@@ -3,73 +3,81 @@
 @source "../src";
 @custom-variant dark (&:is(.dark *));
 @theme inline {
- --radius-sm: 4px; --radius-md: 6px; --radius-lg: 10px; --radius-xl: 14px; --radius-2xl: 18px;
- --font-sans: "Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif;
- --font-mono: "JetBrains Mono",ui-monospace,monospace;
+ --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px; --radius-2xl: 24px; --radius-3xl: 28px;
+ --font-sans: "Nunito",ui-rounded,system-ui,sans-serif;
+ --font-display: "Fredoka","Nunito",ui-rounded,sans-serif;
  --color-background: var(--background); --color-foreground: var(--foreground);
  --color-card: var(--card); --color-card-foreground: var(--foreground);
- --color-popover: var(--secondary); --color-popover-foreground: var(--foreground);
+ --color-popover: var(--card); --color-popover-foreground: var(--foreground);
  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
  --color-secondary: var(--secondary); --color-secondary-foreground: var(--foreground);
- --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
- --color-accent: var(--accent); --color-accent-foreground: var(--foreground);
- --color-destructive: var(--destructive); --color-destructive-foreground: var(--foreground);
- --color-border: var(--border); --color-input: var(--border); --color-ring: var(--interactive);
- --color-success: var(--interactive); --color-warning: var(--brass); --color-interactive: var(--interactive);
- --color-label: var(--spray); --color-placeholder: var(--muted-foreground);
- --color-wave: var(--cyan); --color-cyan: var(--cyan); --color-spray: var(--spray);
- --color-brass: var(--brass); --color-gold: var(--gold); --color-coal: var(--coal);
+ --color-muted: var(--secondary); --color-muted-foreground: var(--muted-foreground);
+ --color-accent: var(--mist); --color-accent-foreground: var(--foreground);
+ --color-destructive: var(--coral); --color-destructive-foreground: var(--sail);
+ --color-border: var(--border); --color-input: var(--border); --color-ring: var(--azure);
+ --color-azure: var(--azure); --color-skyl: var(--skyl); --color-foam: var(--foam); --color-mist: var(--mist);
+ --color-sun: var(--sun); --color-sundeep: var(--sundeep); --color-coral: var(--coral); --color-buoy: var(--buoy);
+ --color-navy: var(--navy); --color-kelp: var(--kelp); --color-kelpdeep: var(--kelpdeep);
+ --color-wood: var(--wood); --color-wooddeep: var(--wooddeep); --color-soot: var(--soot); --color-ruby: var(--ruby);
+ --color-sail: var(--sail); --color-sand: var(--sand); --color-brassy: var(--brassy);
 }
 :root {
- color-scheme: dark;
- --radius: .625rem;
- --background: #0B192C; --background-deep: #0F243A; --foreground: #E2F1FF;
- --card: #152F4A; --secondary: #1C3B5E; --muted: #1A3655; --accent: #12405A;
- --primary: #00F5A0; --primary-foreground: #06231A; --interactive: #00F5A0; --cyan: #00D2D3;
- --brass: #F59E0B; --gold: #D4AF37; --spray: #7EE7F8; --coal: #22262E;
- --muted-foreground: #8FB0CC; --destructive: #F0616D; --border: #2A4E74;
- --gradient-primary: linear-gradient(90deg,#00F5A0,#00A896);
- --gradient-canvas: radial-gradient(1200px 600px at 80% -10%, #12405A 0%, transparent 60%), linear-gradient(180deg,#0B192C,#0F243A);
- --shadow-glow: 0 0 0 1px color-mix(in oklab,#00F5A0 35%,transparent), 0 10px 40px -10px color-mix(in oklab,#00F5A0 35%,transparent);
- --overlay: rgb(11 25 44 / .7);
+ color-scheme: light;
+ --azure:#0284C7; --skyl:#38BDF8; --foam:#F0FDF4; --mist:#E0F2FE; --sun:#FACC15; --sundeep:#EAB308;
+ --coral:#FB7185; --buoy:#F97316; --navy:#0C4A6E; --kelp:#10B981; --kelpdeep:#047857;
+ --wood:#B45309; --wooddeep:#78350F; --soot:#1E293B; --ruby:#E11D48; --sail:#FFFFFF; --sand:#FDE68A; --brassy:#D97706;
+ --background:#BAE6FD; --foreground:var(--navy); --card:var(--mist); --secondary:#BAE6FD;
+ --primary:var(--kelp); --primary-foreground:var(--sail); --muted-foreground:#0369A1; --border:#7DD3FC;
 }
 @layer base {
- * {border-color:var(--border);letter-spacing:0;}
- body {margin:0;background:var(--gradient-canvas);background-attachment:fixed;color:var(--foreground);font-family:var(--font-sans);min-height:100vh;}
- input::placeholder {color:var(--muted-foreground);}
- svg.lucide {stroke-width:1.6;}
- input[type=month]::-webkit-calendar-picker-indicator{filter:invert(.8) sepia(1) hue-rotate(120deg);}
- select option{background:var(--secondary);}
+ * {border-color:var(--border);}
+ body {margin:0;background:linear-gradient(180deg,var(--skyl) 0%,var(--mist) 55%,var(--skyl) 100%);color:var(--foreground);font-family:var(--font-sans);min-height:100vh;}
+ h1,h2,h3 {font-family:var(--font-display);}
+ input[type=month]::-webkit-calendar-picker-indicator{cursor:pointer;}
 }
-@utility num {font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
-@utility bg-gradient-primary {background-image:var(--gradient-primary);}
-@utility glow-card {box-shadow:var(--shadow-glow);}
-@utility panel-surface {background:linear-gradient(160deg,var(--card),color-mix(in oklab,var(--card) 70%,var(--background)));}
-@keyframes waveAnimation {from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes shipPitchRoll {0%,100%{transform:translateY(0) rotate(-1.5deg)}25%{transform:translateY(-3px) rotate(0deg)}50%{transform:translateY(-5px) rotate(1.8deg)}75%{transform:translateY(-2px) rotate(0deg)}}
-@keyframes sail {from{transform:translateX(-200px)}to{transform:translateX(560px)}}
+@utility num {font-variant-numeric:tabular-nums;font-feature-settings:"tnum";}
+@utility card-3d {background:var(--foam);border:3px solid var(--navy);border-bottom-width:8px;border-radius:28px;}
+@utility btn-3d {border-bottom-width:5px;transition:transform .12s,border-bottom-width .12s,filter .15s;&:hover{filter:brightness(1.06)}&:active{transform:translateY(4px);border-bottom-width:1px}}
+@keyframes waveX {from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes bob {0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+@keyframes drift {from{transform:translateX(-15vw)}to{transform:translateX(115vw)}}
+@keyframes gull {0%{transform:translate(-10vw,0)}50%{transform:translate(50vw,-30px)}100%{transform:translate(110vw,10px)}}
+@keyframes flap {0%,100%{transform:scaleY(1)}50%{transform:scaleY(-.6)}}
+@keyframes anchorDrop {0%{transform:translateY(-140px) rotate(-12deg)}60%{transform:translateY(8px) rotate(6deg)}80%{transform:translateY(-6px) rotate(-3deg)}100%{transform:translateY(0) rotate(0)}}
+@keyframes ripple {0%{transform:scale(.2);opacity:0}10%{opacity:1}100%{transform:scale(2.4);opacity:0}}
+@keyframes twinkle {0%,100%{opacity:.2;transform:scale(.6)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes sway {0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+@keyframes billow {0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.08)}}
+@keyframes spray {0%{transform:translate(0,0) scale(.5);opacity:1}100%{transform:translate(var(--dx,14px),-14px) scale(1.2);opacity:0}}
 @keyframes spin {to{transform:rotate(360deg)}}
-@keyframes radar {to{transform:rotate(360deg)}}
-@keyframes pingSlow {0%{transform:scale(.6);opacity:1}100%{transform:scale(2.2);opacity:0}}
-@keyframes drawRoute {from{stroke-dashoffset:600}to{stroke-dashoffset:0}}
-@keyframes foam {0%,100%{opacity:.4;transform:scaleX(.8)}50%{opacity:.9;transform:scaleX(1.2)}}
-@keyframes typeIn {from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
-@keyframes float {0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-14px);opacity:.9}}
-@keyframes radarBorder {0%,100%{box-shadow:0 0 0 0 color-mix(in oklab,#00F5A0 55%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
-@utility animate-wave {animation:waveAnimation 14s linear infinite;}
-@utility animate-wave-slow {animation:waveAnimation 22s linear infinite;}
-@utility animate-pitch {animation:shipPitchRoll 3.2s ease-in-out infinite;transform-origin:50% 70%;}
-@utility animate-bob {animation:shipPitchRoll 4s ease-in-out infinite;}
-@utility animate-sail {animation:sail 8s linear infinite;}
-@utility animate-spin-slow {animation:spin 40s linear infinite;}
-@utility animate-radar {animation:radar 3s linear infinite;transform-origin:0 0;}
-@utility animate-ping-slow {animation:pingSlow 2.4s ease-out infinite;transform-box:fill-box;transform-origin:center;}
-@utility animate-float {animation:float 5s ease-in-out infinite;}
-@utility animate-radar-border {animation:radarBorder 2.2s ease-out infinite;}
-@utility route-draw {stroke-dasharray:6 5;animation:drawRoute 4s linear infinite;}
-@utility typewriter {animation:typeIn .5s steps(30) both;}
-@utility wake {background:linear-gradient(90deg,transparent,color-mix(in oklab,var(--foreground) 70%,transparent));filter:blur(2px);animation:foam 1s ease-in-out infinite;}
-@utility bow-foam {background:var(--foreground);filter:blur(3px);animation:foam .7s ease-in-out infinite;}
-input[type=range]{accent-color:var(--interactive);}
+@keyframes rock {0%,100%{transform:rotate(-9deg) translateY(0)}50%{transform:rotate(9deg) translateY(-8px)}}
+@keyframes pop {0%{transform:scale(.3);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+@keyframes dance {0%,100%{transform:translateY(0) rotate(-8deg)}25%{transform:translateY(-14px) rotate(0)}50%{transform:translateY(0) rotate(8deg)}75%{transform:translateY(-10px)}}
+@keyframes confetti {0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(420px) rotate(720deg);opacity:0}}
+@keyframes beam {0%{transform:rotate(-35deg)}50%{transform:rotate(35deg)}100%{transform:rotate(-35deg)}}
+@keyframes stamp {0%{transform:scale(2.4) rotate(-14deg);opacity:0}70%{transform:scale(.92) rotate(-8deg);opacity:1}100%{transform:scale(1) rotate(-8deg)}}
+@keyframes glowPulse {0%,100%{box-shadow:0 0 0 0 color-mix(in oklab,var(--kelp) 60%,transparent)}50%{box-shadow:0 0 0 10px transparent}}
+@keyframes wiggle {0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+@utility animate-wave {animation:waveX 9s linear infinite;}
+@utility animate-wave-slow {animation:waveX 16s linear infinite;}
+@utility animate-bob {animation:bob 3s ease-in-out infinite;}
+@utility animate-drift {animation:drift var(--dur,60s) linear infinite;}
+@utility animate-gull {animation:gull var(--dur,26s) linear infinite;}
+@utility animate-flap {animation:flap .5s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+@utility animate-anchor {animation:anchorDrop 1s cubic-bezier(.3,1.4,.5,1) both;}
+@utility animate-ripple {animation:ripple 1.2s ease-out .7s both;transform-box:fill-box;transform-origin:center;}
+@utility animate-twinkle {animation:twinkle 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+@utility animate-sway {animation:sway 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center;}
+@utility animate-billow {animation:billow 1s ease-in-out infinite;transform-box:fill-box;transform-origin:left center;}
+@utility animate-spray {animation:spray .6s ease-out infinite;}
+@utility animate-spin-fast {animation:spin .8s linear infinite;transform-box:fill-box;transform-origin:center;}
+@utility animate-spin-var {animation:spin var(--dur,1s) linear infinite;transform-box:fill-box;transform-origin:center;}
+@utility animate-rock {animation:rock 1.4s ease-in-out infinite;}
+@utility animate-pop {animation:pop .45s cubic-bezier(.3,1.5,.5,1) both;}
+@utility animate-dance {animation:dance .7s ease-in-out infinite;}
+@utility animate-confetti {animation:confetti 2.4s ease-in forwards;}
+@utility animate-beam {animation:beam 5s ease-in-out infinite;transform-box:fill-box;transform-origin:left center;}
+@utility animate-stamp {animation:stamp .6s cubic-bezier(.3,1.5,.5,1) both, glowPulse 1.8s ease-out .6s infinite;}
+@utility animate-wiggle {animation:wiggle .5s ease-in-out;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
-@media print {body{background:#fff;color:#000} header,footer,.workbench-form,.report-controls,.workspace-heading{display:none!important} main{display:block!important;max-width:none!important;padding:0!important} aside{position:static!important} .report{border:0!important;box-shadow:none!important}}
+@media print {body{background:none} .ocean-bg,header,footer,.workbench-form,.report-controls,.workspace-heading,.pip-layer{display:none!important} main{display:block!important;max-width:none!important;padding:0!important} .report{border:0!important}}
