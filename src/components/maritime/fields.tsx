@@ -46,7 +46,7 @@ export function SliderField({ label, value, onChange, min, max, step, prefix = "
           <span className="num text-sm text-foreground">{prefix}{fmt(value, step)}{unit && <span className="ml-1 text-muted-foreground">{unit}</span>}</span>
         )}
       </div>
-      <Slider value={[value]} min={min} max={max} step={step} onValueChange={([v]) => onChange(v)} />
+      <Slider value={[value]} min={min} max={max} step={step} onValueChange={([v]) => onChange(v ?? min)} />
       {hint && <p className="num text-[11px] text-muted-foreground">{hint}</p>}
     </div>
   );

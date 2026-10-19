@@ -29,7 +29,7 @@ const PORTS = [
   ["Beira", "Mozambique", "🇲🇿"], ["Norfolk", "USA", "🇺🇸"], ["New Orleans", "USA", "🇺🇸"], ["Mina Saqr", "UAE", "🇦🇪"],
   ["Paradip", "India", "🇮🇳"], ["Visakhapatnam", "India", "🇮🇳"], ["Gangavaram", "India", "🇮🇳"], ["Dhamra", "India", "🇮🇳"],
   ["Haldia", "India", "🇮🇳"], ["Gopalpur", "India", "🇮🇳"], ["Krishnapatnam", "India", "🇮🇳"],
-].map(([name, country, flag]) => ({ name, country, flag }));
+].map(([name = "", country = "", flag = ""]) => ({ name, country, flag }));
 
 const ROUTES = Array.from({ length: 108 }, (_, i) => `RTE_${String(i + 1).padStart(3, "0")}`).map((r) => ({ value: r, label: r }));
 const CARGO = [
