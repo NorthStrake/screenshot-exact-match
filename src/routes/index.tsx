@@ -161,7 +161,7 @@ function Index() {
 
           <Panel icon={<BarChart3 className="h-4 w-4" />} tag="Panel D" title="Macroeconomic & Market Indicators" collapsible defaultOpen={false}>
             {MARKET.map(([k, label, min, max, step, prefix, unit]) => (
-              <SliderField key={k} label={label} value={f[k]} onChange={set(k)} min={min} max={max} step={step} prefix={prefix} unit={unit} />
+              <SliderField key={k} label={label} value={f[k]} onChange={set(k)} min={min} max={max} step={step} prefix={prefix ?? ""} unit={unit ?? ""} />
             ))}
           </Panel>
 
