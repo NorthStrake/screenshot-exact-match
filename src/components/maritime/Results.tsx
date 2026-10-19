@@ -1,107 +1,17 @@
-import { Anchor, CalendarClock, Gauge, Ship as ShipIcon } from "lucide-react";
-import { Radar } from "./visuals";
-
-type Json = Record<string, unknown>;
-const get = (o: unknown, ...keys: string[]): unknown => {
-  if (!o || typeof o !== "object") return undefined;
-  for (const k of keys) if (k in (o as Json)) return (o as Json)[k];
-  return undefined;
-};
-const show = (v: unknown, opts: { usd?: boolean; dec?: number } = {}) => {
-  if (v === undefined || v === null || v === "") return "—";
-  if (typeof v === "number") return (opts.usd ? "$" : "") + v.toLocaleString("en-US", { maximumFractionDigits: opts.dec ?? 2 });
-  return String(v);
-};
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border bg-abyss/50 p-3">
-      <p className="text-[11px] text-muted-foreground">{label}</p>
-      <p className="num mt-1 text-sm text-foreground">{value}</p>
-    </div>
-  );
-}
-
-export function Results({ data }: { data: Json | null }) {
-  if (!data) {
-    return (
-      <div className="glass flex flex-col items-center rounded-2xl p-8 text-center">
-        <Radar />
-        <p className="mt-6 text-lg font-semibold">Awaiting Voyage Parameters</p>
-        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-          Configure the shipment details and dispatch simulation to forecast 4-month freight rates &amp; optimal vessel allocation.
-        </p>
-      </div>
-    );
-  }
-
-  const forecastRaw = get(data, "forecast", "forecasts", "freight_forecast", "monthly_forecast");
-  const forecast = Array.isArray(forecastRaw) ? forecastRaw : [];
-  const alloc = (get(data, "allocation", "optimal_allocation", "fleet_allocation") as Json) ?? data;
-  const diag = (get(data, "diagnostics", "kpis", "voyage_diagnostics") as Json) ?? data;
-  const status = String(get(alloc, "status", "allocation_status") ?? "");
-  const eligible = /eligible/i.test(status);
-  const util = Number(get(diag, "utilization_ratio", "cargo_utilization", "utilization"));
-  const utilPct = Number.isFinite(util) ? Math.min(100, util <= 1 ? util * 100 : util) : null;
-
-  return (
-    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-      <div className="glass rounded-2xl p-5">
-        <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold"><CalendarClock className="h-4 w-4 text-primary" />4-Month Freight Rate Forecast Horizon</h3>
-        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => {
-            const m = forecast[i];
-            return (
-              <div key={i} className="rounded-xl border bg-abyss/50 p-3">
-                <p className="num text-[10px] uppercase tracking-widest text-primary">Month +{i + 1}</p>
-                <p className="num mt-2 text-xl font-semibold">{show(get(m, "freight_rate", "predicted_rate", "rate_usd_per_tonne"), { usd: true })}<span className="text-xs text-muted-foreground">/t</span></p>
-                <p className="num mt-1 text-xs text-muted-foreground">{show(get(m, "total_cost", "total_freight_cost"), { usd: true, dec: 0 })}</p>
-                <p className="num text-xs text-muted-foreground">{show(get(m, "arrival_date", "estimated_arrival_date"))}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="glass rounded-2xl p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-sm font-semibold"><ShipIcon className="h-4 w-4 text-primary" />Optimal Order &amp; Fleet Allocation</h3>
-          {status && (
-            <span className={`rounded-full px-3 py-1 text-xs font-medium ${eligible ? "bg-success/15 text-success" : "bg-warning/15 text-warning"}`}>
-              <span className="mr-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-current" />{status}
-            </span>
-          )}
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <Stat label="Matched Order ID" value={show(get(alloc, "order_id", "matched_order_id"))} />
-          <Stat label="Repositioning Cost" value={show(get(alloc, "reposition_cost", "repositioning_cost"), { usd: true, dec: 0 })} />
-          <Stat label="Idle Days" value={show(get(alloc, "idle_days"))} />
-          <Stat label="Idle Surcharge" value={show(get(alloc, "idle_cost", "idle_surcharge"), { usd: true, dec: 0 })} />
-          <div className="col-span-2 rounded-xl border border-primary/30 bg-primary/10 p-3">
-            <p className="text-[11px] text-muted-foreground">Combined Total Optimized Cost</p>
-            <p className="num text-gradient mt-1 text-2xl font-bold">{show(get(alloc, "total_cost", "total_optimized_cost"), { usd: true, dec: 0 })}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="glass rounded-2xl p-5">
-        <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold"><Gauge className="h-4 w-4 text-primary" />Voyage Diagnostics &amp; KPIs</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <Stat label="Transit Time (days)" value={show(get(diag, "transit_days", "transit_time_days"), { dec: 1 })} />
-          <Stat label="Route Efficiency Score" value={show(get(diag, "route_efficiency_score", "efficiency_score"))} />
-          <div className="col-span-2 rounded-xl border bg-abyss/50 p-3">
-            <div className="flex justify-between text-[11px] text-muted-foreground"><span>DWT vs Cargo Utilization</span><span className="num">{utilPct === null ? "—" : `${utilPct.toFixed(1)}%`}</span></div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-foreground/10">
-              <div className="h-full rounded-full bg-gradient-primary shadow-glow transition-all duration-700" style={{ width: `${utilPct ?? 0}%` }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <details className="glass rounded-2xl p-5">
-        <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold"><Anchor className="h-4 w-4 text-primary" />Raw response</summary>
-        <pre className="num mt-3 max-h-72 overflow-auto rounded-lg bg-abyss/70 p-3 text-xs text-muted-foreground">{JSON.stringify(data, null, 2)}</pre>
-      </details>
-    </div>
-  );
+import { ArrowUpRight, Clock, Download, FileText, Layers } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Compass } from './visuals';
+type Json=Record<string,unknown>;
+const get=(o:unknown,...keys:string[]):unknown=>{if(!o||typeof o!=='object')return undefined;for(const key of keys){const value=(o as Json)[key];if(value!==null&&value!==undefined)return value}return undefined};
+const show=(value:unknown,usd=false)=>value===undefined||value===null||value===''?'—':typeof value==='number'?`${usd?'$':''}${value.toLocaleString('en-US',{maximumFractionDigits:2})}`:String(value);
+const object=(v:unknown):Json=>v&&typeof v==='object'&&!Array.isArray(v)?v as Json:{};
+export function Results({data}:{data:Json|null}) {
+ if(!data)return <section className="report overflow-hidden rounded-lg border bg-card"><div className="flex items-center justify-between border-b px-5 py-4"><h2 className="text-sm font-semibold">Live Simulation Output</h2><ArrowUpRight className="h-4 w-4 text-placeholder"/></div><div className="flex min-h-[365px] flex-col items-center justify-center px-7 py-8 text-center"><span className="mb-6 inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-[10px] text-muted-foreground"><span className="h-1.5 w-1.5 rounded-full bg-muted-foreground"/>Engine Idle • Ready for Dispatch</span><Compass className="h-28 w-28"/><h3 className="mt-5 text-base font-semibold">Your voyage, in clear view.</h3><p className="mt-3 max-w-xs text-xs leading-6 text-muted-foreground">Configure shipment parameters and execute simulation to forecast forward 4-month freight rates and optimal fleet matching.</p></div><div className="grid grid-cols-2 border-t bg-background/60"><div className="border-r p-5"><Clock className="mb-3 h-4 w-4 text-muted-foreground"/><p className="text-[10px] text-muted-foreground">Forecast horizon</p><p className="num mt-1 text-xs font-medium">4 months</p></div><div className="p-5"><Layers className="mb-3 h-4 w-4 text-muted-foreground"/><p className="text-[10px] text-muted-foreground">Allocation status</p><p className="mt-1 text-xs font-medium">Awaiting simulation</p></div></div><div className="flex items-center justify-between border-t px-5 py-3 text-[9px] text-placeholder"><span>VOYAGE ANALYTICS</span><span className="num">NO PREDICTION YET</span></div></section>;
+ const alloc=object(get(data,'allocation','optimal_allocation','fleet_allocation')??data);const diag=object(get(data,'diagnostics','kpis','voyage_diagnostics')??data);const raw=get(data,'forecast','forecasts','freight_forecast','monthly_forecast');const forecast=Array.isArray(raw)?raw:[];
+ const status=String(get(alloc,'status','allocation_status')??'');const eligible=/^eligible$/i.test(status.trim());
+ const total=get(alloc,'total_cost','total_optimized_cost')??get(data,'total_estimated_freight_cost');
+ const rows=forecast.slice(0,4).map((m,i)=>[show(get(m,'horizon_month','month')??`Month +${i+1}`),show(get(m,'freight_rate','predicted_rate','rate_usd_per_tonne'),true),show(get(m,'total_cost','total_freight_cost'),true),show(get(m,'arrival_date','estimated_arrival_date'))]);
+ const costs=[['Direct freight cost',get(alloc,'direct_freight_cost','freight_cost')],['Repositioning cost',get(alloc,'reposition_cost','repositioning_cost')],['Waiting idle cost',get(alloc,'idle_cost','idle_surcharge')]];
+ function exportCsv(){const values=[['Voyage report'],['Voyage duration (days)',show(get(diag,'transit_days','transit_time_days'))],['Matched order',show(get(alloc,'order_id','matched_order_id'))],['Status',status],[],['Horizon month','Predicted rate (USD/tonne)','Total freight (USD)','Expected arrival date'],...rows,[],...costs.map(([label,value])=>[String(label),show(value,true)]),['Net total cost',show(total,true)]];const csv=values.map(row=>row.map(v=>{const safe=/^[=+@\-\t\r]/.test(v)?`'${v}`:v;return `"${safe.replaceAll('"','""')}"`}).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='tidewise-voyage-report.csv';a.click();URL.revokeObjectURL(url)}
+ return <section className="report overflow-hidden rounded-lg border bg-card"><div className="flex flex-wrap items-center justify-between gap-2 border-b px-5 py-4"><h2 className="text-sm font-semibold">Live Simulation Output</h2>{status&&<span className={`rounded-full px-2 py-1 text-[10px] ${eligible?'bg-success/10 text-success':'bg-warning/10 text-warning'}`}>{status}</span>}</div><div className="grid grid-cols-2 border-b"><div className="border-r p-5"><p className="text-[10px] text-muted-foreground">Estimated voyage duration</p><p className="num mt-2 text-xl">{show(get(diag,'transit_days','transit_time_days'))}<span className="ml-1 text-[10px] text-muted-foreground">days</span></p></div><div className="p-5"><p className="text-[10px] text-muted-foreground">Total estimated freight cost</p><p className="num mt-2 break-all text-xl">{show(total,true)}</p></div><div className="col-span-2 border-t px-5 py-3"><p className="text-[10px] text-muted-foreground">Optimal matched order ID</p><p className="num mt-1 text-sm">{show(get(alloc,'order_id','matched_order_id'))}</p></div></div><div className="py-5"><h3 className="px-5 text-xs font-semibold">4-Month Horizon Forecast</h3><div className="mt-4 overflow-x-auto"><table className="w-full text-left text-[10px]"><thead className="border-y bg-background text-muted-foreground"><tr>{['Horizon','Rate / tonne','Total freight','Arrival date'].map(label=><th key={label} className="whitespace-nowrap px-3 py-3 font-medium">{label}</th>)}</tr></thead><tbody>{rows.map((row,i)=><tr key={i} className="num border-b even:bg-background/60">{row.map((value,j)=><td key={j} className="whitespace-nowrap px-3 py-3">{value}</td>)}</tr>)}</tbody></table>{!rows.length&&<p className="px-5 py-4 text-xs text-muted-foreground">No forecast rows returned.</p>}</div></div><div className="border-t p-5"><h3 className="mb-4 text-xs font-semibold">Order &amp; Idle Cost Breakdown</h3><dl className="space-y-3">{costs.map(([label,value])=><div key={String(label)} className="flex items-center justify-between gap-3 text-xs"><dt className="text-muted-foreground">{String(label)}</dt><dd className="num">{show(value,true)}</dd></div>)}<div className="flex justify-between gap-3 border-t pt-4 text-sm font-semibold"><dt>Net total cost</dt><dd className="num">{show(total,true)}</dd></div></dl></div><div className="report-controls flex flex-wrap gap-2 border-t p-5"><Button variant="outline" size="sm" onClick={exportCsv} className="flex-1 shadow-none"><Download/>Export Voyage Report · CSV</Button><Button variant="outline" size="icon" title="Export voyage report as PDF" aria-label="Export voyage report as PDF" onClick={()=>window.print()} className="shadow-none"><FileText/></Button></div><details className="report-controls border-t px-5 py-3"><summary className="cursor-pointer text-[10px] text-muted-foreground">Model response</summary><pre className="num mt-3 max-h-64 overflow-auto text-[10px]">{JSON.stringify(data,null,2)}</pre></details></section>;
 }
