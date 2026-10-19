@@ -17,7 +17,7 @@ export const DEFAULTS = {
 };
 export type Form = typeof DEFAULTS;
 export type NumKey = {[K in keyof Form]: Form[K] extends number ? K : never}[keyof Form];
-export const LIMITS = {distance_nm:[100,20000,100],quantity_mt:[5000,180000,1000],deadweight_tonnage_dwt:[20000,200000,1],speed_knots:[10,18,0.1],idle_cost_per_day:[500,10000,100],reposition_cost_per_distance:[0.5,5,0.05]} as const;
+export const LIMITS = {distance_nm:[100,20000,100],quantity_mt:[5000,180000,1000],deadweight_tonnage_dwt:[20000,200000,1],speed_knots:[10,20,0.1],expected_arrival_hours:[24,30000,24],idle_cost_per_day:[500,10000,100],reposition_cost_per_distance:[0.5,5,0.05]} as const;
 export const MARKET: [NumKey,string,number,number,number,string][] = [
  ['bunker_fuel_price_usd_per_tonne','Bunker fuel price',400,750,0.01,'USD / tonne'],
  ['fuel_price_usd_per_tonne','Vessel fuel price',450,750,0.01,'USD / tonne'],
@@ -35,5 +35,5 @@ export const MARKET: [NumKey,string,number,number,number,string][] = [
 ];
 export function payloadFor(form: Form) { return {...form,current_month:`${form.current_month}-01`,quantity_kg:form.quantity_mt*1000}; }
 export function validateForm(form: Form): boolean {
- return Object.entries(LIMITS).every(([key,[min,max]]) => {const v=form[key as keyof typeof LIMITS]; return Number.isFinite(v) && v>=min && v<=max;}) && /^\d{4}-\d{2}$/.test(form.current_month) && PORTS.some(p=>p.id===form.origin_port_id) && PORTS.some(p=>p.id===form.destination_port_id) && form.route_id.trim().length>0 && form.expected_arrival_hours>0;
+ return Object.entries(LIMITS).every(([key,[min,max]]) => {const v=form[key as keyof typeof LIMITS]; return Number.isFinite(v) && v>=min && v<=max;}) && /^\d{4}-\d{2}$/.test(form.current_month) && PORTS.some(p=>p.id===form.origin_port_id) && PORTS.some(p=>p.id===form.destination_port_id) && form.route_id.trim().length>0;
 }
